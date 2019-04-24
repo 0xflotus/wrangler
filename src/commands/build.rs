@@ -1,18 +1,23 @@
+use crate::user::settings::ProjectType;
 use crate::{commands, install};
 use binary_install::Cache;
 use std::process::Command;
 
-pub fn build(cache: &Cache, project_type: &str) -> Result<(), failure::Error> {
-    if project_type == "js" {
-        println!("⚠️ JavaScript project found. Skipping unecessary build!")
+pub fn build(cache: &Cache, project_type: &ProjectType) -> Result<(), failure::Error> {
+    match project_type {
+        ProjectType::JavaScript => {
+            println!("⚠️ JavaScript project found. Skipping unecessary build!")
+        }
+        ProjectType::Rust => {
+            let tool_name = "wasm-pack";
+            let binary_path = install::install(tool_name, "rustwasm", cache)?.binary(tool_name)?;
+            let build_wasm = format!(
+                "{} build --target no-modules",
+                binary_path.to_string_lossy()
+            );
+            commands::run(command(&build_wasm), &build_wasm)?;
+        }
     }
-    let tool_name = "wasm-pack";
-    let binary_path = install::install(tool_name, "rustwasm", cache)?.binary(tool_name)?;
-    let build_wasm = format!(
-        "{} build --target no-modules",
-        binary_path.to_string_lossy()
-    );
-    commands::run(command(&build_wasm), &build_wasm)?;
     Ok(())
 }
 

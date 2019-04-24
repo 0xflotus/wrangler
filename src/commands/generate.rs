@@ -1,4 +1,4 @@
-use crate::user::settings::ProjectSettings;
+use crate::user::settings::{ProjectSettings, ProjectType};
 use crate::{commands, install};
 use binary_install::Cache;
 use std::process::Command;
@@ -14,17 +14,17 @@ pub fn generate(name: &str, template: &str, cache: &Cache) -> Result<(), failure
         name
     );
 
-    let template_type = template_type(template);
+    let project_type = project_type(template);
 
-    commands::run(command(&worker_init, template_type, name), &worker_init)?;
-    ProjectSettings::generate(name.to_string(), template_type.to_string())?;
+    commands::run(command(&worker_init, &project_type, name), &worker_init)?;
+    ProjectSettings::generate(name.to_string(), project_type)?;
     Ok(())
 }
 
-fn command(cmd: &str, template_type: &str, name: &str) -> Command {
+fn command(cmd: &str, project_type: &ProjectType, name: &str) -> Command {
     println!(
         "🐑 Generating a new {} worker project with name '{}'...",
-        template_type, name
+        project_type, name
     );
 
     if cfg!(target_os = "windows") {
@@ -39,9 +39,9 @@ fn command(cmd: &str, template_type: &str, name: &str) -> Command {
     }
 }
 
-fn template_type(template: &str) -> &str {
+fn project_type(template: &str) -> ProjectType {
     if template.contains("rust") {
-        return "rust";
+        return ProjectType::Rust;
     }
-    "js"
+    ProjectType::JavaScript
 }
