@@ -55,7 +55,7 @@ fn main() -> Result<(), failure::Error> {
                 .arg(
                     Arg::with_name("name")
                         .help("(optional) For multiscript users, provide a script name")
-                        .index(1)
+                        .index(1),
                 ),
         )
         .subcommand(

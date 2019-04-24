@@ -13,15 +13,18 @@ pub fn generate(name: &str, template: &str, cache: &Cache) -> Result<(), failure
         template,
         name
     );
-    commands::run(command(&worker_init, name), &worker_init)?;
+
+    let template_type = template_type(template);
+
+    commands::run(command(&worker_init, template_type, name), &worker_init)?;
     ProjectSettings::generate(name.to_string())?;
     Ok(())
 }
 
-fn command(cmd: &str, name: &str) -> Command {
+fn command(cmd: &str, template_type: &str, name: &str) -> Command {
     println!(
-        "🐑 Generating a new rustwasm worker project with name '{}'...",
-        name
+        "🐑 Generating a new {} worker project with name '{}'...",
+        template_type, name
     );
 
     if cfg!(target_os = "windows") {
@@ -34,4 +37,11 @@ fn command(cmd: &str, name: &str) -> Command {
         c.arg(cmd);
         c
     }
+}
+
+fn template_type(template: &str) -> &str {
+    if template.contains("rust") {
+        return "rust";
+    }
+    "js"
 }
