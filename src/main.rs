@@ -28,7 +28,7 @@ fn main() -> Result<(), failure::Error> {
                 )
                 .arg(
                     Arg::with_name("template")
-                        .help("a link to a github template! defaultes to cloudflare/rustwasm-worker-template")
+                        .help("a link to a github template! defaults to cloudflare/worker-template")
                         .index(2),
                 ),
         )
@@ -109,7 +109,7 @@ fn main() -> Result<(), failure::Error> {
             let name = matches.value_of("name").unwrap_or("wasm-worker");
             let template = matches
                 .value_of("template")
-                .unwrap_or("https://github.com/cloudflare/rustwasm-worker-template");
+                .unwrap_or("https://github.com/cloudflare/worker-template");
             commands::generate(name, template, &cache)?;
         }
 
