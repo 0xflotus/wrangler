@@ -80,8 +80,8 @@ fn main() -> Result<(), failure::Error> {
         )
         .get_matches();
 
-    if matches.subcommand_matches("publish").is_none()
-        && matches.subcommand_matches("whoami").is_none()
+    if matches.subcommand_matches("config").is_some()
+        || matches.subcommand_matches("generate").is_some()
     {
         if let Some(matches) = matches.subcommand_matches("config") {
             let email = matches
@@ -93,28 +93,12 @@ fn main() -> Result<(), failure::Error> {
             commands::global_config(email, api_key)?;
         }
 
-        if let Some(matches) = matches.subcommand_matches("preview") {
-            let method = HTTPMethod::from_str(matches.value_of("method").unwrap_or("get"));
-
-            let body = match matches.value_of("body") {
-                Some(s) => Some(s.to_string()),
-                None => None,
-            };
-
-            commands::build(&cache)?;
-            commands::preview(method, body)?;
-        }
-
         if let Some(matches) = matches.subcommand_matches("generate") {
             let name = matches.value_of("name").unwrap_or("wasm-worker");
             let template = matches
                 .value_of("template")
                 .unwrap_or("https://github.com/cloudflare/worker-template");
             commands::generate(name, template, &cache)?;
-        }
-
-        if matches.subcommand_matches("build").is_some() {
-            commands::build(&cache)?;
         }
     } else {
         let user = User::new()?;
@@ -123,10 +107,26 @@ fn main() -> Result<(), failure::Error> {
             commands::whoami(&user);
         }
 
+        if matches.subcommand_matches("build").is_some() {
+            commands::build(&cache, &user.settings.project.project_type)?;
+        }
+
+        if let Some(matches) = matches.subcommand_matches("preview") {
+            let method = HTTPMethod::from_str(matches.value_of("method").unwrap_or("get"));
+
+            let body = match matches.value_of("body") {
+                Some(s) => Some(s.to_string()),
+                None => None,
+            };
+
+            commands::build(&cache, &user.settings.project.project_type)?;
+            commands::preview(method, body)?;
+        }
+
         if let Some(matches) = matches.subcommand_matches("publish") {
             let name = matches.value_of("name");
 
-            commands::build(&cache)?;
+            commands::build(&cache, &user.settings.project.project_type)?;
             commands::publish(user, name)?;
         }
     }

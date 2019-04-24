@@ -2,7 +2,10 @@ use crate::{commands, install};
 use binary_install::Cache;
 use std::process::Command;
 
-pub fn build(cache: &Cache) -> Result<(), failure::Error> {
+pub fn build(cache: &Cache, project_type: &str) -> Result<(), failure::Error> {
+    if project_type == "js" {
+        println!("⚠️ JavaScript project found. Skipping unecessary build!")
+    }
     let tool_name = "wasm-pack";
     let binary_path = install::install(tool_name, "rustwasm", cache)?.binary(tool_name)?;
     let build_wasm = format!(

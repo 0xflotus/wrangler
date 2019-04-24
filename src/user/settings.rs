@@ -14,7 +14,7 @@ pub struct GlobalUserSettings {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct ProjectSettings {
     pub name: String,
-    #[serde(rename = "type")] 
+    #[serde(rename = "type")]
     pub project_type: String,
     pub zone_id: String,
     pub account_id: String,
