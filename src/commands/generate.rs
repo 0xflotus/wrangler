@@ -17,7 +17,7 @@ pub fn generate(name: &str, template: &str, cache: &Cache) -> Result<(), failure
     let template_type = template_type(template);
 
     commands::run(command(&worker_init, template_type, name), &worker_init)?;
-    ProjectSettings::generate(name.to_string())?;
+    ProjectSettings::generate(name.to_string(), template_type.to_string())?;
     Ok(())
 }
 

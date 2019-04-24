@@ -14,6 +14,8 @@ pub struct GlobalUserSettings {
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct ProjectSettings {
     pub name: String,
+    #[serde(rename = "type")] 
+    pub project_type: String,
     pub zone_id: String,
     pub account_id: String,
     pub route: Option<String>,
@@ -21,9 +23,10 @@ pub struct ProjectSettings {
 }
 
 impl ProjectSettings {
-    pub fn generate(name: String) -> Result<ProjectSettings, failure::Error> {
+    pub fn generate(name: String, project_type: String) -> Result<ProjectSettings, failure::Error> {
         let project_settings = ProjectSettings {
             name: name.clone(),
+            project_type: project_type.clone(),
             zone_id: String::new(),
             account_id: String::new(),
             route: Some(String::new()),
